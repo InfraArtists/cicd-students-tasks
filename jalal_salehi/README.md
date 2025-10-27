@@ -1,4 +1,4 @@
-# Go Web Application with Kubernetes & GitLab CI/CD
+# Go Web Application with K8S & GitLab CI/CD
 
 A simple Go web application that serves a "Hello from Go!" message. This project includes Dockerization, Kubernetes deployment manifests for `dev` and `prod` environments, and a GitLab CI/CD pipeline with automated testing and deployment.
 
