@@ -23,7 +23,6 @@ build:
 
 test-trigger:
   stage: test
-  image: alpine:3.18
   # script:
   #   - echo "Triggering child pipeline for tests..."
   trigger:
