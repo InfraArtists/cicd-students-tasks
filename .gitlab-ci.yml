@@ -26,6 +26,6 @@ test-trigger:
   # script:
   #   - echo "Triggering child pipeline for tests..."
   trigger:
-    include: reza_saadati/tests/tests.yml
+    include: reza_saadati/tests.yml
   # rules:
   #   - if: $CI_PIPELINE_SOURCE
