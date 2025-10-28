@@ -1,8 +1,0 @@
-tests:
-  image: python:3.9
-  stage: test
-  before_script:
-    - cd reza_saadati/tests
-    - pip install -r requirements.txt
-  script:
-    - pytest test_producer.py
