@@ -38,7 +38,7 @@ deploy-dev:
     - chmod 700 $HOME/.kube
     - echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
     - sed -i 's/latest/'"$CI_COMMIT_SHORT_SHA"'/g' reza_saadati/k8s/deployment.yml
-    - kubectl config set-cluster k8s --server
+    #- kubectl config set-cluster k8s --server
     - kubectl apply -n dev -f reza_saadati/k8s/deployment.yml
   only: 
    - develop
