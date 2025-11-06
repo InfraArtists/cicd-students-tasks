@@ -1,5 +1,5 @@
 import pytest
-from producer import EventProducer
+from app import EventProducer
 from config import MIN_EVENTS, MAX_EVENTS
 
 @pytest.fixture
