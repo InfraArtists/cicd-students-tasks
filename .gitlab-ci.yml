@@ -1,15 +1,15 @@
 stages:
-  - build
+  - build-dev
   - test
-  - deploy
+  - deploy-dev
 
 variables:
   IMAGE: "${REGISTRY_URL}/${IMAGE_NAME}"
   REGISTRY_URL: "registry.stackops.ir"
   #IMAGE_NAME: "miladsaadati/producer"
 
-build:
-  stage: build
+build-dev:
+  stage: build-dev
   image: docker:23.0.1
   services:
     - docker:23.0.1-dind
@@ -29,3 +29,21 @@ test-trigger:
     include: reza_saadati/tests.yml
   # rules:
   #   - if: $CI_PIPELINE_SOURCE
+
+deploy-dev:
+  stage: deploy-dev
+  image: bitnami/kubectl:latest
+  script:
+    - mkdir -p $HOME/.kube
+    - chmod 700 $HOME/.kube
+    - echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
+    - sed -i 's/latest/'"$CI_COMMIT_SHORT_SHA"'/g' reza_saadati/k8s/deployment.yml
+    - kubectl config set-cluster k8s --server
+    - kubectl apply -n dev -f reza_saadati/k8s/deployment.yml
+  only: 
+   - develop
+
+
+
+
+
