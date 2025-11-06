@@ -2,6 +2,8 @@ stages:
   - build-dev
   - test
   - deploy-dev
+  - build-prod
+  - deploy-prod
 
 variables:
   IMAGE: "${REGISTRY_URL}/${IMAGE_NAME}"
@@ -39,9 +41,9 @@ deploy-dev:
     - mkdir -p $HOME/.kube
     - chmod 700 $HOME/.kube
     - echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
-    - sed -i 's/latest/'"$CI_COMMIT_SHORT_SHA"'/g' reza_saadati/k8s/deployment.yml
+    - sed -i 's/latest/'"$CI_COMMIT_SHORT_SHA"'/g' reza_saadati/k8s/dev/deployment.yml
     #- kubectl config set-cluster k8s --server
-    - kubectl apply -n dev -f reza_saadati/k8s/deployment.yml
+    - kubectl apply -n dev -f reza_saadati/k8s/dev/deployment.yml
   only: 
    - develop
 
@@ -49,3 +51,33 @@ deploy-dev:
 
 
 
+build-prod:
+  stage: build-prod
+  image: docker:23.0.1
+  services:
+    - docker:23.0.1-dind
+
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$REGISTRY_URL"
+    - echo "$CI_REGISTRY_PASSWORD"
+    - echo "$CI_REGISTRY_USER"
+  script:
+    - cd reza_saadati/producer
+    - docker build -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"\
+  only: 
+   - tags
+   - master
+
+deploy-prod:
+  stage: deploy-prod
+  image: dtzar/helm-kubectl:latest
+  script:
+    - mkdir -p $HOME/.kube
+    - chmod 700 $HOME/.kube
+    - echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
+    - sed -i 's/latest/'"$CI_COMMIT_TAG"'/g' reza_saadati/k8s/prod/deployment.yml
+    #- kubectl config set-cluster k8s --server
+    - kubectl apply -n dev -f reza_saadati/k8s/prod/deployment.yml
+  only: 
+   - develop
