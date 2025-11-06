@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-configmap
+  namespace: django-todo-app
+data:
+  DEBUG: "False"
