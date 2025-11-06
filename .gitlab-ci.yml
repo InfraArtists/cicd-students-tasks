@@ -78,7 +78,7 @@ deploy-prod:
     - echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
     - sed -i 's/latest/'"$CI_COMMIT_TAG"'/g' reza_saadati/k8s/prod/deployment.yml
     #- kubectl config set-cluster k8s --server
-    - kubectl apply -n prod -f reza_saadati/k8s/prod/deployment.yml
+    - kubectl apply -n prod --validate=false -f reza_saadati/k8s/prod/deployment.yml
   only: 
    - tags
   when: manual
