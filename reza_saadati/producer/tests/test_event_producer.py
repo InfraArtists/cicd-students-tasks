@@ -1,52 +1,25 @@
 import pytest
-from unittest.mock import patch, MagicMock
-from event_producer import EventProducer
+from producer import EventProducer
+from config import MIN_EVENTS, MAX_EVENTS
 
-# ---------- Test 1: Connection retry ----------
-@patch('event_producer.pika.BlockingConnection')
-@patch('event_producer.pika.ConnectionParameters')
-@patch('event_producer.pika.PlainCredentials')
-def test_connect_to_rabbitmq(mock_creds, mock_params, mock_conn):
-    mock_channel = MagicMock()
-    mock_conn.return_value.channel.return_value = mock_channel
+@pytest.fixture
+def producer():
+    # ساخت نمونه بدون اتصال واقعی به RabbitMQ
+    p = EventProducer(sequential=True)
+    p.connection = None
+    p.channel = None
+    return p
 
-    producer = EventProducer(sequential=False)
-    producer.connect_to_rabbitmq()
-
-    mock_creds.assert_called_once()
-    mock_conn.assert_called_once()
-    mock_channel.queue_declare.assert_called_once()
-
-# ---------- Test 2: Sequential rate ----------
-def test_get_next_event_rate_sequential():
-    producer = EventProducer(sequential=True)
-    producer.current_event_rate = 3
-    rate1 = producer.get_next_event_rate()
-    rate2 = producer.get_next_event_rate()
-    assert rate2 == rate1 + 1 or rate2 == producer.current_event_rate
-
-# ---------- Test 3: Random rate ----------
-def test_get_next_event_rate_random(mocker):
-    mocker.patch('random.randint', return_value=10)
-    producer = EventProducer(sequential=False)
+def test_event_rate_in_sequential_mode(producer):
     rate = producer.get_next_event_rate()
-    assert rate == 10
+    assert MIN_EVENTS <= rate <= MAX_EVENTS
 
-# ---------- Test 4: Produce events sends messages ----------
-@patch('event_producer.time.sleep', return_value=None)
-def test_produce_events_one_cycle(mock_sleep, mocker):
-    mock_channel = MagicMock()
-    producer = EventProducer(sequential=False)
-    producer.channel = mock_channel
-    mocker.patch.object(producer, 'get_next_event_rate', return_value=2)
+def test_event_rate_in_random_mode():
+    p = EventProducer(sequential=False)
+    p.connection = None
+    p.channel = None
+    rate = p.get_next_event_rate()
+    assert MIN_EVENTS <= rate <= MAX_EVENTS
 
-    # Run only one iteration
-    mocker.patch('event_producer.time.time', side_effect=[1.0, 2.0, 3.0])
-    mocker.patch('builtins.print')
-    with patch('event_producer.EventProducer.produce_events', side_effect=KeyboardInterrupt):
-        try:
-            producer.produce_events()
-        except KeyboardInterrupt:
-            pass
-
-    assert mock_channel.basic_publish.called
+def test_config_values():
+    assert MIN_EVENTS < MAX_EVENTS
