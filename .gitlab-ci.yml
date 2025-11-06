@@ -1,17 +1,14 @@
 stages:
-  - build-dev
+  - build
   - test
-  - deploy-dev
-  - build-prod
-  - deploy-prod
+  - deploy
 
 variables:
   IMAGE: "${REGISTRY_URL}/${IMAGE_NAME}"
   REGISTRY_URL: "registry.stackops.ir"
-  #IMAGE_NAME: "miladsaadati/producer"
 
 build-dev:
-  stage: build-dev
+  stage: build
   image: docker:23.0.1
   services:
     - docker:23.0.1-dind
@@ -35,7 +32,7 @@ test-trigger:
   #   - if: $CI_PIPELINE_SOURCE
 
 deploy-dev:
-  stage: deploy-dev
+  stage: deploy
   image: dtzar/helm-kubectl:latest
   script:
     - mkdir -p $HOME/.kube
@@ -47,12 +44,8 @@ deploy-dev:
   only: 
    - develop
 
-
-
-
-
 build-prod:
-  stage: build-prod
+  stage: build
   image: docker:23.0.1
   services:
     - docker:23.0.1-dind
@@ -70,7 +63,7 @@ build-prod:
    - master
 
 deploy-prod:
-  stage: deploy-prod
+  stage: deploy
   image: dtzar/helm-kubectl:latest
   script:
     - mkdir -p $HOME/.kube
