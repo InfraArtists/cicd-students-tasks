@@ -32,7 +32,7 @@ test-trigger:
 
 deploy-dev:
   stage: deploy-dev
-  image: bitnami/kubectl:latest
+  image: dtzar/helm-kubectl:latest
   script:
     - mkdir -p $HOME/.kube
     - chmod 700 $HOME/.kube
