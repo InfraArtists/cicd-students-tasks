@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: producer
-        image: docker.io/miladsaadati/producer:latest
+        image: registry.stackops.ir/milad/cicd-students-tasks:latest
         env:
         - name: RABBITMQ_HOST
           value: "rabbitmq.rabbitmq.svc.cluster.local"
