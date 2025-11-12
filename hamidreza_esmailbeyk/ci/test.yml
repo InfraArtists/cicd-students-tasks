@@ -1,0 +1,15 @@
+stages:
+  - test
+
+unit-tests:
+  image: python:3.11-slim-bullseye
+  stage: test
+  before_script:
+    - apt-get update
+    - apt-get install -y gcc python3-dev
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - echo "Running Django tests"
+    - python manage.py migrate --noinput
+    - python manage.py test --verbosity=2
