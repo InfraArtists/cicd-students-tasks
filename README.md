@@ -2,7 +2,7 @@
 
 Fork this repo
 
-Create a directory with your name, use underline istate of space: (example: milad_notouzi)
+Create a directory with your name, use underline istate of space: (example: milad_norouzi)
 
 Work on your task
 
