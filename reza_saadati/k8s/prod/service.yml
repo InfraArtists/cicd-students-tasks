@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-producer-service
+spec:
+  type: ClusterIP
+  selector:
+    app: event-producer  # Matches the Deployment's labels
+  ports:
+    - protocol: TCP
+      port: 80           # Service port (arbitrary, since your app may not expose HTTP)
+      targetPort: 80     # Must match the containerPort in the Deployment (if defined)

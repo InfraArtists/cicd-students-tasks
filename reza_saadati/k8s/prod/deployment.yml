@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-producer
+  template:
+    metadata:
+      labels:
+        app: event-producer
+    spec:
+      containers:
+      - name: producer
+        image: registry.stackops.ir/milad/cicd-students-tasks:latest
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq.rabbitmq.svc.cluster.local"
+        - name: RABBITMQ_USER
+          value: "admin"
+        - name: RABBITMQ_PASSWORD
+          value: ""
+        - name: QUEUE_NAME
+          value: "events"
+        - name: MIN_EVENTS_PER_SEC
+          value: "10"
+        - name: MAX_EVENTS_PER_SEC
+          value: "20"
+        resources:
+          limits:
+            cpu: "128m"
+            memory: "128Mi"
+          requests:
+            cpu: "64m"
+            memory: "64Mi"
